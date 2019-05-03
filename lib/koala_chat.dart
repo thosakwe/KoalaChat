@@ -15,14 +15,20 @@ Future configureServer(Angel app) async {
   // serve static files.
   var fs = const LocalFileSystem();
   // Initiate Authentification
-  AngelAuth<User> auth = AngelAuth<User>();
-  
+  AngelAuth<User> auth = AngelAuth<User>(allowCookie: false, jwtLifeSpan: 1000 * 60 * 60 * 72,);
+
+  auth.serializer = (User user) => user.id;
+  auth.deserializer = (id) async => await app.findHookedService<Service<String,User>>('/api/users').findOne({'query': {"id":id}}) as User;
+
   auth.strategies['local'] = LocalAuthStrategy((username, password) async {
-    User user = await app.findServiceOf<String, User>('/api/users').findOne({'query': {"username":username}});
+    User user = await app.findHookedService<Service<String,User>>('/api/users').findOne({'query': {"username":username}}) as User;
+    print(user.toJson());
     if (user.password == password) return user;
   });
 
-  app.post('/auth', auth.authenticate('local'));
+  await app.configure(auth.configureServer);
+
+  app.post('/auth/local', auth.authenticate('local'));
 
   // Set up our application, using the plug-ins defined with this project.
   await app.configure(configuration.configureServer(fs));

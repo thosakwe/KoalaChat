@@ -20,7 +20,7 @@ class ChatController extends WebSocketController {
       socket.sendError(AngelHttpException.badRequest(
           message: "Please specify a valid message"));
     } else {
-      await app.findService('/api/messages').create(message);
+      await app.findService('/api/messages').create(message, {"ws:filter":(_, __) => false});
       broadcast('message', message.toJson());
     }
   }

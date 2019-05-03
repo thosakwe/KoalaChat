@@ -20,5 +20,6 @@ Future configureServer(Angel app) async {
   await db.open();
   
   await app.configure(userService.configureServer(db));
+  
   await app.configure(messageService.configureServer(db));
 }

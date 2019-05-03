@@ -4,8 +4,6 @@ import 'package:koala_chat/src/models/user.dart';
 
 @Expose('/user')
 class UserController extends Controller {
-  UserController();
-
   @Expose('/create', method: 'POST')
   createUser(RequestContext req) async {
     await req.parseBody();
@@ -40,5 +38,11 @@ class UserController extends Controller {
     List<Message> messages = await _service.index({'query': {'userid': userid}}) as List<Message>;
 
     return messages;
+  }
+
+  @Expose('/secret')
+  secure(User user){
+    print(user.username);
+    return user.id;
   }
 }
