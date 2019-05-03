@@ -10,7 +10,7 @@ void prettyLog(LogRecord record) {
 
   if (record.error != null) {
     var err = record.error;
-    if (err is AngelHttpException && err.statusCode != 500) return;
+    if (err is AngelHttpException && err.statusCode != 500) return; 
     print(code.wrap(record.toString() + '\n'));
     print(code.wrap(err.toString()));
 

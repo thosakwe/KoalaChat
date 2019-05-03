@@ -21,28 +21,26 @@ class UserController extends Controller {
   }
 
   @Expose('/delete', method: 'DELETE')
-  deleteUser(RequestContext req) async {
-    await req.parseBody();
+  deleteUser(RequestContext req, User user) async {
     Service _service = app.findService('/api/users');
 
-    User user = await _service.findOne({'query': {'username': req.bodyAsMap["username"]}}) as User;
+    User delete = await _service.read( user.id) as User;
     
-    if (user.password != req.bodyAsMap["password"]) return AngelHttpException.notAuthenticated();
+    if (user.password != delete.password || user.hashCode != delete.hashCode ) return AngelHttpException.notAuthenticated();
     return await _service.remove(user.id); 
   }
 
   @Expose('/messages/:userid')
   getMessages(RequestContext req, String userid) async{
-    Service _service = app.findService('/api/messages');
-
-    List<Message> messages = await _service.index({'query': {'userid': userid}}) as List<Message>;
-
-    return messages;
+    return await app.findService('/api/messages').index({'query': {'userid': userid}}) as List<Message>;
+  }
+  @Expose('/messages')
+  getMessagesForUser(RequestContext req, User user) async{
+    return await app.findService('/api/messages').index({'query': {'userid': user.id}}) as List<Message>;
   }
 
-  @Expose('/secret')
-  secure(User user){
-    print(user.username);
-    return user.id;
+  @Expose('/join')
+  join(User user){
+    return user.username;
   }
 }

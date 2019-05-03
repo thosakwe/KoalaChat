@@ -88,3 +88,10 @@ logs/
 *.pem
 .DS_Store
 server_log.txt
+
+# KEYS
+
+config/*
+!config/default.yaml
+config/development.yaml
+config/production.yaml
