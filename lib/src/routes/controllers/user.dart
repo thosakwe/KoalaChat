@@ -1,4 +1,5 @@
 import 'package:angel_framework/angel_framework.dart';
+import 'package:koala_chat/src/models/message.dart';
 import 'package:koala_chat/src/models/user.dart';
 
 @Expose('/user')
@@ -30,5 +31,14 @@ class UserController extends Controller {
     
     if (user.password != req.bodyAsMap["password"]) return AngelHttpException.notAuthenticated();
     return await _service.remove(user.id); 
+  }
+
+  @Expose('/messages/:userid')
+  getMessages(RequestContext req, String userid) async{
+    Service _service = app.findService('/api/messages');
+
+    List<Message> messages = await _service.index({'query': {'userid': userid}}) as List<Message>;
+
+    return messages;
   }
 }

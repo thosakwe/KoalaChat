@@ -15,7 +15,7 @@ dependencies:
   angel_serialize: ^2.2.3+1
   angel_model: ^1.0.3
   angel_mongo: ^2.0.2
-  angel_websocket: ^2.0.2
+  angel_websocket: ^2.0.3
 dev_dependencies:
   angel_serialize_generator: ^2.4.3
   build_runner: ^1.0.0
