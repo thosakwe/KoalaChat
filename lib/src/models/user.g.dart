@@ -12,6 +12,7 @@ class User extends _User {
       {this.id,
       @required this.username,
       @required this.password,
+      this.group = userGroup.REGULAR,
       this.createdAt,
       this.updatedAt});
 
@@ -25,6 +26,9 @@ class User extends _User {
   final String password;
 
   @override
+  final userGroup group;
+
+  @override
   final DateTime createdAt;
 
   @override
@@ -34,12 +38,14 @@ class User extends _User {
       {String id,
       String username,
       String password,
+      userGroup group,
       DateTime createdAt,
       DateTime updatedAt}) {
-    return new User(
+    return User(
         id: id ?? this.id,
         username: username ?? this.username,
         password: password ?? this.password,
+        group: group ?? this.group,
         createdAt: createdAt ?? this.createdAt,
         updatedAt: updatedAt ?? this.updatedAt);
   }
@@ -49,18 +55,19 @@ class User extends _User {
         other.id == id &&
         other.username == username &&
         other.password == password &&
+        other.group == group &&
         other.createdAt == createdAt &&
         other.updatedAt == updatedAt;
   }
 
   @override
   int get hashCode {
-    return hashObjects([id, username, password, createdAt, updatedAt]);
+    return hashObjects([id, username, password, group, createdAt, updatedAt]);
   }
 
   @override
   String toString() {
-    return "User(id=$id, username=$username, password=$password, createdAt=$createdAt, updatedAt=$updatedAt)";
+    return "User(id=$id, username=$username, password=$password, group=$group, createdAt=$createdAt, updatedAt=$updatedAt)";
   }
 
   Map<String, dynamic> toJson() {
@@ -72,7 +79,7 @@ class User extends _User {
 // SerializerGenerator
 // **************************************************************************
 
-const UserSerializer userSerializer = const UserSerializer();
+const UserSerializer userSerializer = UserSerializer();
 
 class UserEncoder extends Converter<User, Map> {
   const UserEncoder();
@@ -97,17 +104,22 @@ class UserSerializer extends Codec<User, Map> {
   get decoder => const UserDecoder();
   static User fromMap(Map map) {
     if (map['username'] == null) {
-      throw new FormatException("Missing required field 'username' on User.");
+      throw FormatException("Missing required field 'username' on User.");
     }
 
     if (map['password'] == null) {
-      throw new FormatException("Missing required field 'password' on User.");
+      throw FormatException("Missing required field 'password' on User.");
     }
 
-    return new User(
+    return User(
         id: map['id'] as String,
         username: map['username'] as String,
         password: map['password'] as String,
+        group: map['group'] is userGroup
+            ? (map['group'] as userGroup)
+            : (map['group'] is int
+                ? userGroup.values[map['group'] as int]
+                : userGroup.REGULAR),
         createdAt: map['created_at'] != null
             ? (map['created_at'] is DateTime
                 ? (map['created_at'] as DateTime)
@@ -125,17 +137,12 @@ class UserSerializer extends Codec<User, Map> {
       return null;
     }
     if (model.username == null) {
-      throw new FormatException("Missing required field 'username' on User.");
-    }
-
-    if (model.password == null) {
-      throw new FormatException("Missing required field 'password' on User.");
+      throw FormatException("Missing required field 'username' on User.");
     }
 
     return {
       'id': model.id,
       'username': model.username,
-      'password': model.password,
       'created_at': model.createdAt?.toIso8601String(),
       'updated_at': model.updatedAt?.toIso8601String()
     };
@@ -147,6 +154,7 @@ abstract class UserFields {
     id,
     username,
     password,
+    group,
     createdAt,
     updatedAt
   ];
@@ -156,6 +164,8 @@ abstract class UserFields {
   static const String username = 'username';
 
   static const String password = 'password';
+
+  static const String group = 'group';
 
   static const String createdAt = 'created_at';
 

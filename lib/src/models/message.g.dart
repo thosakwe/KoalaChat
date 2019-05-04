@@ -36,7 +36,7 @@ class Message extends _Message {
       String message,
       DateTime createdAt,
       DateTime updatedAt}) {
-    return new Message(
+    return Message(
         id: id ?? this.id,
         userid: userid ?? this.userid,
         message: message ?? this.message,
@@ -72,7 +72,7 @@ class Message extends _Message {
 // SerializerGenerator
 // **************************************************************************
 
-const MessageSerializer messageSerializer = const MessageSerializer();
+const MessageSerializer messageSerializer = MessageSerializer();
 
 class MessageEncoder extends Converter<Message, Map> {
   const MessageEncoder();
@@ -97,14 +97,14 @@ class MessageSerializer extends Codec<Message, Map> {
   get decoder => const MessageDecoder();
   static Message fromMap(Map map) {
     if (map['userid'] == null) {
-      throw new FormatException("Missing required field 'userid' on Message.");
+      throw FormatException("Missing required field 'userid' on Message.");
     }
 
     if (map['message'] == null) {
-      throw new FormatException("Missing required field 'message' on Message.");
+      throw FormatException("Missing required field 'message' on Message.");
     }
 
-    return new Message(
+    return Message(
         id: map['id'] as String,
         userid: map['userid'] as String,
         message: map['message'] as String,
@@ -125,11 +125,11 @@ class MessageSerializer extends Codec<Message, Map> {
       return null;
     }
     if (model.userid == null) {
-      throw new FormatException("Missing required field 'userid' on Message.");
+      throw FormatException("Missing required field 'userid' on Message.");
     }
 
     if (model.message == null) {
-      throw new FormatException("Missing required field 'message' on Message.");
+      throw FormatException("Missing required field 'message' on Message.");
     }
 
     return {
