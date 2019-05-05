@@ -12,7 +12,7 @@ class User extends _User {
       {this.id,
       @required this.username,
       @required this.password,
-      this.group = userGroup.REGULAR,
+      this.group,
       this.createdAt,
       this.updatedAt});
 
@@ -119,7 +119,7 @@ class UserSerializer extends Codec<User, Map> {
             ? (map['group'] as userGroup)
             : (map['group'] is int
                 ? userGroup.values[map['group'] as int]
-                : userGroup.REGULAR),
+                : null),
         createdAt: map['created_at'] != null
             ? (map['created_at'] is DateTime
                 ? (map['created_at'] as DateTime)
@@ -140,9 +140,16 @@ class UserSerializer extends Codec<User, Map> {
       throw FormatException("Missing required field 'username' on User.");
     }
 
+    if (model.password == null) {
+      throw FormatException("Missing required field 'password' on User.");
+    }
+
     return {
       'id': model.id,
       'username': model.username,
+      'password': model.password,
+      'group':
+          model.group == null ? null : userGroup.values.indexOf(model.group),
       'created_at': model.createdAt?.toIso8601String(),
       'updated_at': model.updatedAt?.toIso8601String()
     };

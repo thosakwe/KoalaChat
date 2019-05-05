@@ -6,8 +6,10 @@ part 'user.g.dart';
 abstract class _User extends Model {
   @SerializableField(isNullable: false)
   String username;
-  @SerializableField(isNullable: false, exclude: true, canDeserialize: true)
+  @SerializableField(isNullable: false)
   String password;
-  @SerializableField(exclude: true, canDeserialize: true, defaultValue: userGroup.REGULAR)
+  @SerializableField()
   userGroup group;
+
+  User safe() => (this as User).copyWith(password: 'hidden');
 }

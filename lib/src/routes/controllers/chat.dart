@@ -2,7 +2,6 @@ import 'package:angel_auth/angel_auth.dart';
 import 'package:angel_framework/angel_framework.dart';
 import 'package:angel_websocket/server.dart';
 import 'package:koala_chat/src/models/message.dart';
-import 'package:koala_chat/src/models/user.dart';
 
 class ChatController extends WebSocketController {
   Angel app;

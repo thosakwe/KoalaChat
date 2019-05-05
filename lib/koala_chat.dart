@@ -3,6 +3,7 @@ library koala_chat;
 import 'dart:async';
 import 'package:angel_auth/angel_auth.dart';
 import 'package:angel_framework/angel_framework.dart';
+import 'package:dbcrypt/dbcrypt.dart';
 import 'package:file/local.dart';
 import 'package:koala_chat/src/models/user.dart';
 import 'src/config/config.dart' as configuration;
@@ -15,14 +16,15 @@ Future configureServer(Angel app) async {
   // serve static files.
   var fs = const LocalFileSystem();
   // Initiate Authentification
-  AngelAuth<User> auth = AngelAuth<User>(allowCookie: false, jwtLifeSpan: 1000 * 60 * 60 * 72);
+  AngelAuth<User> auth = AngelAuth<User>(jwtLifeSpan: 1000 * 60 * 60 * 72, allowTokenInQuery: false, secureCookies: app.isProduction);
   // Serialize and deserialize a user
   auth.serializer = (User user) => user.id;
-  auth.deserializer = (id) async => await app.findHookedService<Service<String,User>>('/api/users').read(id) as User;
+  auth.deserializer = (id) async => (await app.findHookedService<Service<String,User>>('/api/users').read(id) as User).safe();
   // Add local stragtegy
   auth.strategies['local'] = LocalAuthStrategy((username, password) async {
-    User user = await app.findHookedService<Service<String,User>>('/api/users').findOne({'query': {"username":username}}).catchError((_)=>null) as User;
-    if (user.password == password) return user;
+    User user = await app.findHookedService<Service<String,User>>('/api/users').findOne({'query': {"username":username}}).catchError((_) => null) as User;
+    if(user == null) return null;
+    if (DBCrypt().checkpw(password, user.password)) return user.safe();
   });
   // Configure auth
   await app.configure(auth.configureServer);
