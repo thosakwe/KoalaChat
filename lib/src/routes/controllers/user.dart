@@ -6,14 +6,16 @@ import 'package:koala_chat/src/helper/user_helper.dart';
 
 @Expose('/user')
 class UserController extends Controller {
+  /// Get the user service connection
+  Service<String, User> get userService =>
+      app.findServiceOf<String, User>('/api/users');
+
   /// Create a User and insert it into the database
   /// needs valid req.body
   @Expose('/create', method: 'POST')
   createUser(RequestContext req) async {
     // parse body
     await req.parseBody();
-    // Get the user service connection
-    Service _service = app.findService('/api/users');
     // retrieve information
     String username = req.bodyAsMap["username"] as String;
     String password = req.bodyAsMap["password"] as String;
@@ -27,14 +29,14 @@ class UserController extends Controller {
     // Create "secure" password hash with DBCrypt, the jBCrypt implememntation
     var digestedPW = DBCrypt().hashpw(password, DBCrypt().gensalt());
     // Check if user already exists
-    List duplicate = await _service.index({
+    var duplicate = await userService.index({
       'query': {"username": username}
     });
     duplicate.isNotEmpty
         ? throw AngelHttpException.badRequest(message: "User already exist")
         : null;
     // create new user
-    await _service.create(
+    await userService.create(
       User(
         username: username,
         password: digestedPW.toString(),
@@ -43,7 +45,7 @@ class UserController extends Controller {
         updatedAt: DateTime.now(),
       ),
     );
-    return {"path": "success","message": "Registration successful"};
+    return {"path": "success", "message": "Registration successful"};
   }
 
   /// Deletes the current authenticated user
